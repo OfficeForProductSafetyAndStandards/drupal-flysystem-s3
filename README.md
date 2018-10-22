@@ -59,6 +59,9 @@ $schemes = [
 
       // 'endpoint' => 'https://api.example.com', // An alternative API endpoint
                                                   // for 3rd party S3 providers.
+
+      // 'public' => TRUE,                        // Set to TRUE to link to files
+                                                  // using direct links.
     ],
 
     'cache' => TRUE, // Creates a metadata cache to speed up lookups.

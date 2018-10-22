@@ -62,6 +62,13 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
   protected $urlPrefix;
 
   /**
+   * Whether the stream is set to public.
+   *
+   * @var bool
+   */
+  protected $isPublic;
+
+  /**
    * Constructs an S3 object.
    *
    * @param \Aws\S3\S3Client $client
@@ -73,6 +80,7 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
     $this->client = $client;
     $this->bucket = $config->get('bucket', '');
     $this->prefix = $config->get('prefix', '');
+    $this->isPublic = $config->get('public', FALSE);
     $this->options = $config->get('options', []);
 
     $this->urlPrefix = $this->calculateUrlPrefix($config);
@@ -172,6 +180,11 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   public function getExternalUrl($uri) {
+
+    if ($this->isPublic === FALSE) {
+      return $this->getDownloadlUrl($uri);
+    }
+
     $target = $this->getTarget($uri);
 
     if (strpos($target, 'styles/') === 0 && !file_exists($uri)) {
