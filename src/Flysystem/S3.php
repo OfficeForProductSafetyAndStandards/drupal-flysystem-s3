@@ -207,10 +207,11 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
    */
   public function ensure($force = FALSE) {
     try {
-        $this->getAdapter()->listContents();
-    } catch(S3Exception $e) {
-        $message = $e->getMessage();
-        \Drupal::logger('flysystem_s3')->error($message);
+      $this->getAdapter()->listContents();
+    }
+    catch (S3Exception $e) {
+      $message = $e->getMessage();
+      \Drupal::logger('flysystem_s3')->error($message);
     }
 
     // @TODO: If the bucket exists, can we write to it? Find a way to test that.
