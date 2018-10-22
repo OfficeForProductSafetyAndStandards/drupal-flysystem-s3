@@ -4,6 +4,7 @@ namespace Drupal\flysystem_s3\Flysystem;
 
 use Aws\Credentials\Credentials;
 use Aws\S3\S3Client;
+use Aws\S3\Exception\S3Exception;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -173,7 +174,14 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   public function getAdapter() {
-    return new S3Adapter($this->client, $this->bucket, $this->prefix, $this->options);
+    try {
+      $adapter = new S3Adapter($this->client, $this->bucket, $this->prefix, $this->options);
+      return $adapter;
+    }
+    catch (S3Exception $e) {
+      $message = $e->getMessage();
+      \Drupal::logger('flysystem_s3')->error($message);
+    }
   }
 
   /**
@@ -198,6 +206,13 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   public function ensure($force = FALSE) {
+    try {
+        $this->getAdapter()->listContents();
+    } catch(S3Exception $e) {
+        $message = $e->getMessage();
+        \Drupal::logger('flysystem_s3')->error($message);
+    }
+
     // @TODO: If the bucket exists, can we write to it? Find a way to test that.
     if (!$this->client->doesBucketExist($this->bucket)) {
       return [[
