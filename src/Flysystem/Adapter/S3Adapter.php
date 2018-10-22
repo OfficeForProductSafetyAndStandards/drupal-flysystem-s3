@@ -18,13 +18,15 @@ class S3Adapter extends AwsS3Adapter {
    */
   public function has($path) {
     $location = $this->applyPathPrefix($path);
-
-    if ($this->s3Client->doesObjectExist($this->bucket, $location)) {
+    if ($this->s3Client->doesObjectExist($this->bucket, $location, $this->options)) {
       return TRUE;
     }
-
-    // Check for directory existance.
-    return $this->s3Client->doesObjectExist($this->bucket, $location . '/');
+    if ($this->s3Client->doesObjectExist($this->bucket, $location . '/') === TRUE) {
+      return TRUE;
+    }
+    else {
+      return $this->doesDirectoryExist($location);
+    }
   }
 
   /**
