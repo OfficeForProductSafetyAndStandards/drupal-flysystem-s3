@@ -21,6 +21,9 @@ of the region names and their corresponding ids:
 |Asia Pacific (Sydney)     |ap-southeast-2 |
 |South America (Sao Paulo) |sa-east-1      |
 
+The `s3-cors-example.json` file has a template you can use to configure CORS
+using the REST API or the `aws s3api put-bucket-cors` command.
+
 Example configuration:
 
 ```php
@@ -62,6 +65,10 @@ $schemes = [
 
       // 'public' => TRUE,                        // Set to TRUE to link to files
                                                   // using direct links.
+
+      // 'cors' => TRUE,                          // Set to TRUE if CORS upload
+                                                  // support is enabled for the
+                                                  // bucket.
     ],
 
     'cache' => TRUE, // Creates a metadata cache to speed up lookups.
