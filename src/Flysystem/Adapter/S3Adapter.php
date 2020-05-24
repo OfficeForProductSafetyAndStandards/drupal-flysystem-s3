@@ -39,7 +39,7 @@ class S3Adapter extends AwsS3Adapter {
       return [
         'type' => 'dir',
         'path' => $path,
-        'timestamp' => REQUEST_TIME,
+        'timestamp' => \Drupal::time()->getRequestTime(),
         'visibility' => AdapterInterface::VISIBILITY_PUBLIC,
       ];
     }

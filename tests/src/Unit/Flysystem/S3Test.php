@@ -23,9 +23,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class S3Test extends UnitTestCase {
 
-  /**
-   *
-   */
   public function test() {
     $configuration = [
       'bucket' => 'example-bucket',
@@ -75,9 +72,6 @@ class S3Test extends UnitTestCase {
     $this->assertInstanceOf(Credentials::class, $client_config['credentials']);
   }
 
-  /**
-   *
-   */
   public function testCreate() {
     $container = new ContainerBuilder();
     $container->set('request_stack', new RequestStack());
@@ -94,9 +88,6 @@ class S3Test extends UnitTestCase {
     $this->assertInstanceOf(S3::class, $plugin);
   }
 
-  /**
-   *
-   */
   public function testCreateUsingNonAwsConfiguration() {
     $container = new ContainerBuilder();
     $container->set('request_stack', new RequestStack());
@@ -115,9 +106,6 @@ class S3Test extends UnitTestCase {
     $this->assertSame('https://api.somewhere.tld', (string) $plugin->getAdapter()->getClient()->getEndpoint());
   }
 
-  /**
-   *
-   */
   public function testCreateUsingNonAwsConfigurationWithBucket() {
     $container = new ContainerBuilder();
     $container->set('request_stack', new RequestStack());
@@ -137,22 +125,16 @@ class S3Test extends UnitTestCase {
     $this->assertSame('https://api.somewhere.tld', (string) $plugin->getAdapter()->getClient()->getEndpoint());
   }
 
-  /**
-   *
-   */
   public function testEmptyCnameDoesNotBreakConfiguration() {
     $configuration = [
       'cname'    => NULL,
       'bucket'   => 'my-bucket',
     ];
 
-    $plugin = new S3($this->getMock(S3ClientInterface::class), new Config($configuration));
+    $plugin = new S3($this->createMock(S3ClientInterface::class), new Config($configuration));
     $this->assertSame('http://s3.amazonaws.com/my-bucket/foo.html', $plugin->getExternalUrl('s3://foo.html'));
   }
 
-  /**
-   *
-   */
   public function testEnsure() {
     $client = $this->prophesize(S3ClientInterface::class);
     $client->doesBucketExist(Argument::type('string'))->willReturn(TRUE);
@@ -168,9 +150,6 @@ class S3Test extends UnitTestCase {
     $this->assertSame(RfcLogLevel::ERROR, $result[0]['severity']);
   }
 
-  /**
-   *
-   */
   public function testIamAuth() {
     $container = new ContainerBuilder();
     $container->set('request_stack', new RequestStack());
