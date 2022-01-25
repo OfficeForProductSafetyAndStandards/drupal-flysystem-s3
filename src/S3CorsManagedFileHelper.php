@@ -13,8 +13,10 @@ class S3CorsManagedFileHelper {
    * Function alterInfo called by hook_element_info_alter().
    */
   public static function alterInfo(array &$types) {
-    array_unshift($types['managed_file']['#process'], [get_called_class(), 'preProcessCors']);
-    $types['managed_file']['#process'][] = [get_called_class(), 'postProcessCors'];
+    if (isset($types['managed_file'])) {
+      array_unshift($types['managed_file']['#process'], [get_called_class(), 'preProcessCors']);
+      $types['managed_file']['#process'][] = [get_called_class(), 'postProcessCors'];
+    }
   }
 
   /**

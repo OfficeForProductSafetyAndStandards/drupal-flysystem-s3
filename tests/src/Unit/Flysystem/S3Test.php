@@ -1,6 +1,6 @@
 <?php
 
-namespace NoDrupal\Tests\flysystem_s3\Unit\Flysystem;
+namespace Drupal\Tests\flysystem_s3\Unit\Flysystem;
 
 use Aws\Credentials\Credentials;
 use Aws\S3\S3Client;
@@ -23,33 +23,38 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class S3Test extends UnitTestCase {
 
-  public function test() {
-    $configuration = [
+  /**
+   * @covers ::__construct
+   * @covers ::getExternalUrl
+   */
+  public function testGetExternalUrl() {
+    $configuration = new Config([
       'bucket' => 'example-bucket',
-      'prefix' => 'test prefix',
       'cname' => 'example.com',
-    ];
+      'prefix' => 'test prefix',
+      'public' => TRUE,
+    ]);
 
     $client = new S3Client([
       'version' => 'latest',
       'region' => 'beep',
-      'credentials' => new Credentials('fsdf', 'sfsdf'),
+      'credentials' => new Credentials('foo', 'bar'),
     ]);
 
-    $plugin = new S3($client, new Config($configuration));
+    $plugin = new S3($client, $configuration);
 
     $this->assertInstanceOf(AdapterInterface::class, $plugin->getAdapter());
-
     $this->assertSame('http://example.com/test%20prefix/foo%201.html', $plugin->getExternalUrl('s3://foo 1.html'));
 
-    $configuration['prefix'] = '';
+    $configuration->set('prefix', '');
 
-    $plugin = new S3($client, new Config($configuration));
+    $plugin = new S3($client, $configuration);
     $this->assertSame('http://example.com/foo%201.html', $plugin->getExternalUrl('s3://foo 1.html'));
   }
 
   /**
-   * Tests merging defaults into configuration arrays.
+   * @covers ::mergeConfiguration
+   * @covers ::mergeClientConfiguration
    */
   public function testMergeConfiguration() {
     $container = new ContainerBuilder();
@@ -72,6 +77,9 @@ class S3Test extends UnitTestCase {
     $this->assertInstanceOf(Credentials::class, $client_config['credentials']);
   }
 
+  /**
+   * @covers ::create
+   */
   public function testCreate() {
     $container = new ContainerBuilder();
     $container->set('request_stack', new RequestStack());
@@ -88,6 +96,10 @@ class S3Test extends UnitTestCase {
     $this->assertInstanceOf(S3::class, $plugin);
   }
 
+  /**
+   * @covers ::create
+   * @covers ::getAdapter
+   */
   public function testCreateUsingNonAwsConfiguration() {
     $container = new ContainerBuilder();
     $container->set('request_stack', new RequestStack());
@@ -99,6 +111,7 @@ class S3Test extends UnitTestCase {
       'region'   => 'eu-west-1',
       'cname'    => 'something.somewhere.tld',
       'endpoint' => 'https://api.somewhere.tld',
+      'public'   => TRUE,
     ];
 
     $plugin = S3::create($container, $configuration, '', '');
@@ -106,6 +119,11 @@ class S3Test extends UnitTestCase {
     $this->assertSame('https://api.somewhere.tld', (string) $plugin->getAdapter()->getClient()->getEndpoint());
   }
 
+  /**
+   * @covers ::create
+   * @covers ::getExternalUrl
+   * @covers ::getAdapter
+   */
   public function testCreateUsingNonAwsConfigurationWithBucket() {
     $container = new ContainerBuilder();
     $container->set('request_stack', new RequestStack());
@@ -118,6 +136,7 @@ class S3Test extends UnitTestCase {
       'cname_is_bucket' => FALSE,
       'bucket'          => 'my-bucket',
       'endpoint'        => 'https://api.somewhere.tld',
+      'public'          => TRUE,
     ];
 
     $plugin = S3::create($container, $configuration, '', '');
@@ -125,20 +144,43 @@ class S3Test extends UnitTestCase {
     $this->assertSame('https://api.somewhere.tld', (string) $plugin->getAdapter()->getClient()->getEndpoint());
   }
 
+  /**
+   * @covers ::__construct
+   * @covers ::getExternalUrl
+   */
   public function testEmptyCnameDoesNotBreakConfiguration() {
-    $configuration = [
+    $configuration = new Config([
       'cname'    => NULL,
       'bucket'   => 'my-bucket',
-    ];
+      'public'   => TRUE,
+    ]);
 
-    $plugin = new S3($this->createMock(S3ClientInterface::class), new Config($configuration));
+    $client = new S3Client([
+      'version' => 'latest',
+      'region' => 'beep',
+      'credentials' => new Credentials('fsdf', 'sfsdf'),
+    ]);
+
+    $plugin = new S3($client, $configuration);
     $this->assertSame('http://s3.amazonaws.com/my-bucket/foo.html', $plugin->getExternalUrl('s3://foo.html'));
   }
 
+  /**
+   * @covers ::ensure
+   */
   public function testEnsure() {
+    $configuration = new Config([
+      'cname'    => NULL,
+      'bucket'   => 'my-bucket',
+      'public'   => TRUE,
+    ]);
+
     $client = $this->prophesize(S3ClientInterface::class);
+    $client->willImplement(S3ClientInterface::class);
     $client->doesBucketExist(Argument::type('string'))->willReturn(TRUE);
-    $plugin = new S3($client->reveal(), new Config(['bucket' => 'example-bucket']));
+    $client->getPaginator('ListObjects', Argument::type('array'))
+      ->willReturn([]);
+    $plugin = new S3($client->reveal(), $configuration);
 
     $this->assertSame([], $plugin->ensure());
 
@@ -148,17 +190,6 @@ class S3Test extends UnitTestCase {
     $result = $plugin->ensure();
     $this->assertSame(1, count($result));
     $this->assertSame(RfcLogLevel::ERROR, $result[0]['severity']);
-  }
-
-  public function testIamAuth() {
-    $container = new ContainerBuilder();
-    $container->set('request_stack', new RequestStack());
-    $container->get('request_stack')->push(Request::create('https://example.com/'));
-    $container->set('cache.default', new MemoryBackend('bin'));
-
-    $configuration = ['bucket' => 'example-bucket'];
-
-    $plugin = S3::create($container, $configuration, '', '');
   }
 
 }

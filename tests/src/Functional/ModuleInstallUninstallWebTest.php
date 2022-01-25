@@ -1,8 +1,8 @@
 <?php
 
-namespace Drupal\flysystem_s3\Tests;
+namespace Drupal\Tests\flysystem_s3\Functional;
 
-use Drupal\flysystem\Tests\ModuleInstallUninstallWebTest as Base;
+use Drupal\Tests\flysystem\Functional\ModuleInstallUninstallWebTest as Base;
 
 /**
  * Tests module installation and uninstallation.

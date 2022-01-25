@@ -1,16 +1,17 @@
 <?php
 
-namespace NoDrupal\Tests\flysystem_s3\Unit;
+namespace Drupal\Tests\flysystem_s3\Unit;
 
 use Drupal\flysystem_s3\AwsCacheAdapter;
 use Drupal\Core\Cache\MemoryBackend;
+use PHPUnit\Framework\Testcase;
 
 /**
  * @coversDefaultClass \Drupal\flysystem_s3\AwsCacheAdapter
  * @covers \Drupal\flysystem_s3\AwsCacheAdapter
  * @group flysystem_s3
  */
-class AwsCacheAdapterTest extends \PHPUnit_Framework_TestCase {
+class AwsCacheAdapterTest extends Testcase {
 
   /**
    *

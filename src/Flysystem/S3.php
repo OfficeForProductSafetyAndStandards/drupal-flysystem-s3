@@ -5,6 +5,7 @@ namespace Drupal\flysystem_s3\Flysystem;
 use Aws\Credentials\Credentials;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use Aws\S3\S3ClientInterface;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -77,7 +78,7 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
    * @param \League\Flysystem\Config $config
    *   The configuration.
    */
-  public function __construct(S3Client $client, Config $config) {
+  public function __construct(S3ClientInterface $client, Config $config) {
     $this->client = $client;
     $this->bucket = $config->get('bucket', '');
     $this->prefix = $config->get('prefix', '');
