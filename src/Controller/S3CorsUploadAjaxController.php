@@ -67,7 +67,7 @@ class S3CorsUploadAjaxController extends ControllerBase {
     $post = $request->request->all();
 
     /** @var \Drupal\flysystem_s3\Flysystem\Adapter\S3Adapter $adapter */
-    $scheme = \Drupal::service('file_system')->uriScheme($post['destination']);
+    $scheme = StreamWrapperManager::getScheme($post['destination']);
     $adapter = $this->flysystemFactory->getPlugin($scheme)->getAdapter();
 
     $client = $adapter->getClient();

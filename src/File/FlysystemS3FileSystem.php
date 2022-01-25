@@ -60,7 +60,7 @@ class FlysystemS3FileSystem extends FileSystem {
    * @see \Twistor\FlysystemStreamWrapper::stream_metadata
    */
   public function chmod($uri, $mode = NULL) {
-    $scheme = parent::uriScheme($uri);
+    $scheme = $this->streamWrapperManager::getScheme($uri);
 
     if ($this->isPrivateS3Scheme($scheme)) {
       is_dir($uri) ? $mode = 0700 : $mode = 0600;

@@ -3,6 +3,7 @@
 namespace Drupal\flysystem_s3;
 
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
 
 /**
  * Helper for altering and processing a managed_file element for CORS upload.
@@ -33,7 +34,7 @@ class S3CorsManagedFileHelper {
     // has permission to upload files using CORS.
     $element['#s3_cors'] = FALSE;
 
-    if (!empty($element['#upload_location']) && $scheme = \Drupal::service('file_system')->uriScheme($element['#upload_location'])) {
+    if (!empty($element['#upload_location']) && $scheme = StreamWrapperManager::getScheme($element['#upload_location'])) {
       if (static::isCorsAvailable($scheme)) {
         // @todo Verify account permission/role respected with cache tags.
         // Disable the default progress indicator.
