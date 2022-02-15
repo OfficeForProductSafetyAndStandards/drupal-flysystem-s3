@@ -72,35 +72,21 @@ class S3CorsUploadAjaxController extends ControllerBase {
 
     $client = $adapter->getClient();
     $bucket = $adapter->getBucket();
-    $destination = $adapter->applyPathPrefix(StreamWrapperManager::getTarget($post['destination']));
+    $destination = $this->fileSystem->getDestinationFilename($post['destination'] . '/' . $post['filename'], FileSystemInterface::EXISTS_RENAME);
+
+    // Apply the prefix to the URI and use it as a key in the POST request.
+    $post['key'] = $adapter->applyPathPrefix(StreamWrapperManager::getTarget($destination));
 
     $options = [
       ['acl' => $post['acl']],
       ['bucket' => $bucket],
-      ['starts-with', '$key', $destination . '/'],
+      ['starts-with', '$key', $post['key']],
+      ['starts-with', '$Content-Type', $post['Content-Type']],
     ];
-
-    // Retrieve the file name and build the URI.
-    // Destination does not contain a prefix as it is applied by the fly system.
-    $uri = \Drupal::service('file_system')->createFilename($post['filename'], $post['destination']);
-    // Apply the prefix to the URI and use it as a key in the POST request.
-    $post['key'] = $adapter->applyPathPrefix(StreamWrapperManager::getTarget($uri));
-
-    // Create a temporary file to return with a file ID in the response.
-    $file = File::create([
-      'uri' => $post['key'],
-      'filesize' => $post['filesize'],
-      'filename' => $post['filename'],
-      'filemime' => $post['filemime'],
-      'uid' => \Drupal::currentUser()->getAccount()->id(),
-    ]);
-    $file->save();
 
     // Remove values not necessary for the request to Amazon.
     unset($post['destination']);
     unset($post['filename']);
-    unset($post['filemime']);
-    unset($post['filesize']);
 
     // @todo Make this interval configurable.
     $expiration = '+5 hours';
@@ -110,9 +96,35 @@ class S3CorsUploadAjaxController extends ControllerBase {
     $data['attributes'] = $postObject->getFormAttributes();
     $data['inputs'] = $postObject->getFormInputs();
     $data['options'] = $options;
-    $data['fid'] = $file->id();
+    $data['url'] = $destination;
 
     return new JsonResponse($data);
+  }
+
+  /**
+   * Request handler for /flysystem-s3/cors-upload-save.
+   *
+   * Create a file object after the file has been successfuly uploaded to S3.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JsonResponse with the newly created file id.
+   */
+  public function saveFile(Request $request) {
+    $post = $request->request->all();
+    // Create a temporary file to return with a file ID in the response.
+    $file = File::create([
+      'uri' => $post['url'],
+      'filesize' => $post['filesize'],
+      'filename' => $this->fileSystem->baseName($post['url']),
+      'filemime' => $post['filemime'],
+      'uid' => \Drupal::currentUser()->getAccount()->id(),
+    ]);
+    $file->save();
+
+    return new JsonResponse(['fid' => $file->id()]);
   }
 
 }
