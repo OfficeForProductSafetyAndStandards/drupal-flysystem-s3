@@ -2,6 +2,7 @@
 
 namespace Drupal\flysystem_s3\Flysystem\Adapter;
 
+use Aws\S3\S3ClientInterface;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Config;
@@ -12,6 +13,20 @@ use League\Flysystem\Util\MimeType;
  * Overrides methods so it works with Drupal.
  */
 class S3Adapter extends AwsS3Adapter {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(S3ClientInterface $client, $bucket, $prefix = '', array $options = [], $streamReads = TRUE) {
+    // In order to stat files by specifying non-streaming http option which has
+    // become default setting as of league/flysystem-aws-s3-v3 version 1.0.25.
+    // @see https://www.drupal.org/project/flysystem_s3/issues/3172969
+    if (!isset($options['@http']['stream'])) {
+      $options['@http']['stream'] = FALSE;
+    }
+
+    parent::__construct($client, $bucket, $prefix, $options, $streamReads);
+  }
 
   /**
    * {@inheritdoc}
