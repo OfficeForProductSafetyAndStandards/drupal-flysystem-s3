@@ -86,7 +86,7 @@
                   // Set the file upload to an empty value to prevent the file from being uploaded to Drupal.
                   $fileElement.val('');
                   // Set the fid element to our provided fid so that the AJAX response will render our file.
-                  var $fidsElement = $fileElement.siblings('input[type="hidden"][name$="[fids]"]');
+                  var $fidsElement = $fileElement.closest('.js-form-managed-file').find('input[type="hidden"][name$="[fids]"]');
                   // List all uploaded files fids to string.
                   var uploadedFileFidString = uploadedFileFid.join(" ");
 
