@@ -2,6 +2,7 @@
 
 namespace Drupal\flysystem_s3\File;
 
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\File\FileSystem;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
@@ -11,6 +12,8 @@ use Psr\Log\LoggerInterface;
  * Decorates the Drupal FileSystem service to handle chmod() for S3.
  */
 class FlysystemS3FileSystem extends FileSystem {
+
+  use DependencySerializationTrait;
 
   /**
    * FlysystemS3FileSystem constructor.
