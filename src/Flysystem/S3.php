@@ -208,7 +208,7 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
    */
   public function ensure($force = FALSE) {
     try {
-      $this->getAdapter()->listContents();
+      $exists = $this->client->doesBucketExist($this->bucket);
     }
     catch (S3Exception $e) {
       $message = $e->getMessage();
@@ -216,7 +216,7 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
     }
 
     // @TODO: If the bucket exists, can we write to it? Find a way to test that.
-    if (!$this->client->doesBucketExist($this->bucket)) {
+    if (!$exists) {
       return [[
         'severity' => RfcLogLevel::ERROR,
         'message' => 'Bucket %bucket does not exist.',
