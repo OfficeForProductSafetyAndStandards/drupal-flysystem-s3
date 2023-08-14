@@ -68,7 +68,7 @@ class S3Adapter extends AwsS3Adapter {
   protected function upload($path, $body, Config $config) {
     $key = $this->applyPathPrefix($path);
     $options = $this->getOptionsFromConfig($config);
-    $acl = isset($options['ACL']) ? $options['ACL'] : 'private';
+    $acl = $options['ACL'] ?? 'private';
 
     if (!isset($options['ContentType'])) {
       if (is_string($body)) {

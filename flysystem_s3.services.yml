@@ -3,4 +3,4 @@ services:
     public: false
     class: \Drupal\flysystem_s3\File\FlysystemS3FileSystem
     decorates: file_system
-    arguments: ['@stream_wrapper_manager', '@settings', '@logger.channel.file']
+    arguments: ["@stream_wrapper_manager", "@settings", "@logger.channel.file"]

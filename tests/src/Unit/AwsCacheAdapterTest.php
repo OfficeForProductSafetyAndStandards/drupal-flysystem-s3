@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\flysystem_s3\Unit;
 
-use Drupal\flysystem_s3\AwsCacheAdapter;
 use Drupal\Core\Cache\MemoryBackend;
+use Drupal\flysystem_s3\AwsCacheAdapter;
 use PHPUnit\Framework\Testcase;
 
 /**
@@ -14,7 +14,7 @@ use PHPUnit\Framework\Testcase;
 class AwsCacheAdapterTest extends Testcase {
 
   /**
-   *
+   * Tests basic operations for the cache adaptor.
    */
   public function testBasicGetSetDelete() {
     $backend = new MemoryBackend('foo');
@@ -34,7 +34,7 @@ class AwsCacheAdapterTest extends Testcase {
   }
 
   /**
-   *
+   * Tests Time To Live setting.
    */
   public function testTtlIsSet() {
     $backend = new MemoryBackend('foo');
@@ -42,7 +42,7 @@ class AwsCacheAdapterTest extends Testcase {
 
     $cache->set('key', 'value', 10);
 
-    // This should work unles the system running the test is extremely slow.
+    // This should work unless the system running the test is extremely slow.
     $expires = time() + 10;
 
     $this->assertSame('value', $cache->get('key'));

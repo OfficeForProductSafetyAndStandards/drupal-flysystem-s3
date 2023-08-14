@@ -1,5 +1,13 @@
 {
   "name": "drupal/flysystem_s3",
+  "description": "Provides an Amazon S3 plugin for Flysystem.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://drupal.org/project/flysystem_s3",
+  "support": {
+    "issues": "https://drupal.org/project/issues/flysystem_s3",
+    "source": "https://git.drupalcode.org/project/flysystem_s3"
+  },
   "require": {
     "drupal/flysystem": "^2.0",
     "league/flysystem": "^1.0.20",

@@ -3,8 +3,8 @@
 namespace Drupal\flysystem_s3\Flysystem;
 
 use Aws\Credentials\Credentials;
-use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use Aws\S3\S3Client;
 use Aws\S3\S3ClientInterface;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Logger\RfcLogLevel;
@@ -215,7 +215,7 @@ class S3 implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
       \Drupal::logger('flysystem_s3')->error($message);
     }
 
-    // @TODO: If the bucket exists, can we write to it? Find a way to test that.
+    // @todo If the bucket exists, can we write to it? Find a way to test that.
     if (!$exists) {
       return [[
         'severity' => RfcLogLevel::ERROR,

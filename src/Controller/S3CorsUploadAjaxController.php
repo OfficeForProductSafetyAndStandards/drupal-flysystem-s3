@@ -2,15 +2,15 @@
 
 namespace Drupal\flysystem_s3\Controller;
 
+use Aws\S3\PostObjectV4;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\file\Entity\File;
 use Drupal\flysystem\FlysystemFactory;
-use Drupal\Core\File\FileSystemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Aws\S3\PostObjectV4;
-use Drupal\Core\StreamWrapper\StreamWrapperManager;
 
 /**
  * Defines a controller to respond to S3 CORS upload AJAX requests.
@@ -120,7 +120,7 @@ class S3CorsUploadAjaxController extends ControllerBase {
       'filesize' => $post['filesize'],
       'filename' => $this->fileSystem->baseName($post['url']),
       'filemime' => $post['filemime'],
-      'uid' => \Drupal::currentUser()->getAccount()->id(),
+      'uid' => $this->currentUser()->getAccount()->id(),
     ]);
     $file->save();
 
