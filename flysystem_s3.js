@@ -3,7 +3,7 @@
  * Provides JavaScript additions to the S3 CORS upload managed file field type.
  */
 
-(function($, Drupal) {
+(function($, Drupal, once) {
   /**
    * S3 File upload utility functions.
    *
@@ -349,28 +349,20 @@
    */
   Drupal.behaviors.flySystemS3CorsUpload = {
     attach(context) {
-      $(context)
-        .find(
-          '.js-form-managed-file input[type="file"][data-flysystem-s3-cors]'
-        )
+      const fileInputSelector =
+        '.js-form-managed-file input[type="file"][data-flysystem-s3-cors]';
+      $(once("auto-cors-upload", fileInputSelector, context))
         // Add the CORS upload handler to the file input.
-        .once("auto-cors-upload")
         .on("change.autoCorsFileUpload", Drupal.flysystemS3.submitCorsUpload)
         // Disable the upload button trigger so that the CORS upload handler can run first.
         .off("change.autoFileUpload", Drupal.file.triggerUploadButton);
     },
     detach(context, setting, trigger) {
+      const fileInputSelector = '.js-form-managed-file input[type="file"][data-flysystem-s3-cors]';
       if (trigger === "unload") {
-        $(context)
-          .find(
-            '.js-form-managed-file input[type="file"][data-flysystem-s3-cors]'
-          )
-          .removeOnce("auto-cors-upload")
-          .off(
-            "change.autoCorsFileUpload",
-            Drupal.flysystemS3.submitCorsUpload
-          );
+        $(once.remove("auto-cors-upload", fileInputSelector, context))
+          .off("change.autoCorsFileUpload", Drupal.flysystemS3.submitCorsUpload);
       }
     }
   };
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal, once, drupalSettings);

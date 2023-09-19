@@ -12,6 +12,6 @@
     "drupal/flysystem": "^2.0",
     "league/flysystem": "^1.0.20",
     "league/flysystem-aws-s3-v3": "^1.0, !=1.0.12, !=1.0.13",
-    "drupal/core": "^9.0"
+    "drupal/core": "^9.2 || ^10"
   }
 }

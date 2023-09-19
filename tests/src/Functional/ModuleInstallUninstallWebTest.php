@@ -14,6 +14,6 @@ class ModuleInstallUninstallWebTest extends Base {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['flysystem_s3'];
+  protected static $modules = ['flysystem_s3'];
 
 }

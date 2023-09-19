@@ -12,6 +12,7 @@ use Drupal\Tests\UnitTestCase;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -21,6 +22,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * @group flysystem_s3
  */
 class S3Test extends UnitTestCase {
+
+  use ProphecyTrait;
 
   /**
    * @covers ::__construct
